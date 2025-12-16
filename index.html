@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>꿈 그림 일기장</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    /* body {
+      font-family: 'Noto Sans KR', -apple-system, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+      background-attachment: fixed;
+      min-height: 100vh;
+      color: #fff;
+      overflow-x: hidden;
+    } */
+    
+    
+    
+    body {
+      font-family: 'Noto Sans KR', -apple-system, sans-serif;
+      
+      /* 이미지 URL 사용 */
+      background-image: url('https://images.unsplash.com/photo-1519681393784-d120267933ba?q=80&w=2070&auto=format&fit=crop'); 
+      background-color: #1a1a2e; /* 이미지가 로딩되기 전 보여질 어두운 색 */
+      
+      background-size: cover;      /* 화면 꽉 차게 조절 */
+      background-position: center; /* 중앙 정렬 */
+      background-repeat: no-repeat;
+      background-attachment: fixed; /* 스크롤해도 배경 고정 */
+      
+      min-height: 100vh;
+      color: #fff;
+      overflow-x: hidden;
+    }
+
+
+
+    /* 별 배경 애니메이션 */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: 
+        radial-gradient(2px 2px at 20% 30%, white, transparent),
+        radial-gradient(2px 2px at 60% 70%, white, transparent),
+        radial-gradient(1px 1px at 50% 50%, white, transparent),
+        radial-gradient(1px 1px at 80% 10%, white, transparent),
+        radial-gradient(2px 2px at 90% 60%, white, transparent),
+        radial-gradient(1px 1px at 33% 80%, white, transparent);
+      background-size: 200% 200%;
+      animation: twinkle 20s ease-in-out infinite;
+      opacity: 0.6;
+      pointer-events: none;
+    }
+
+    @keyframes twinkle {
+      0%, 100% { opacity: 0.6; }
+      50% { opacity: 0.3; }
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 20px;
+      position: relative;
+      z-index: 1;
+    }
+
+    header {
+      text-align: center;
+      padding: 40px 20px;
+      animation: fadeInDown 0.8s ease;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+      text-shadow: 0 0 20px rgba(255,255,255,0.5);
+    }
+
+    .subtitle {
+      font-size: 1rem;
+      opacity: 0.9;
+      letter-spacing: 2px;
+    }
+
+    /* 탭 네비게이션 */
+    .tabs {
+      display: flex;
+      gap: 10px;
+      margin: 30px 0;
+      background: rgba(255,255,255,0.1);
+      backdrop-filter: blur(10px);
+      border-radius: 15px;
+      padding: 10px;
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 15px 20px;
+      border: none;
+      background: transparent;
+      color: rgba(255,255,255,0.7);
+      font-size: 1rem;
+      cursor: pointer;
+      border-radius: 10px;
+      transition: all 0.3s ease;
+      font-weight: 500;
+    }
+
+    .tab-btn.active {
+      background: rgba(255,255,255,0.2);
+      color: #fff;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    }
+
+    .tab-content {
+      display: none;
+      animation: fadeIn 0.5s ease;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    /* 카드 스타일 */
+    .card {
+      background: rgba(255,255,255,0.15);
+      backdrop-filter: blur(20px);
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+      border: 1px solid rgba(255,255,255,0.2);
+      margin-bottom: 20px;
+    }
+
+    .form-group {
+      margin-bottom: 25px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 10px;
+      font-weight: 500;
+      font-size: 1.1rem;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 150px;
+      padding: 15px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-radius: 12px;
+      background: rgba(255,255,255,0.1);
+      color: #fff;
+      font-size: 1rem;
+      resize: vertical;
+      transition: all 0.3s ease;
+    }
+
+    textarea::placeholder {
+      color: rgba(255,255,255,0.6);
+    }
+
+    textarea:focus {
+      outline: none;
+      border-color: rgba(255,255,255,0.6);
+      background: rgba(255,255,255,0.15);
+    }
+
+    /* 스타일 선택 */
+    .style-options {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 15px;
+      margin-top: 10px;
+    }
+
+    .style-option {
+      position: relative;
+    }
+
+    .style-option input[type="radio"] {
+      display: none;
+    }
+
+    .style-label {
+      display: block;
+      padding: 15px;
+      background: rgba(255,255,255,0.1);
+      border: 2px solid rgba(255,255,255,0.3);
+      border-radius: 12px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-weight: 500;
+    }
+
+    .style-option input[type="radio"]:checked + .style-label {
+      background: rgba(255,255,255,0.3);
+      border-color: #fff;
+      box-shadow: 0 0 20px rgba(255,255,255,0.4);
+    }
+
+    .style-label:hover {
+      background: rgba(255,255,255,0.2);
+      transform: translateY(-2px);
+    }
+
+    /* 버튼 */
+    .btn-primary {
+      width: 100%;
+      padding: 18px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      font-size: 1.2rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+    }
+
+    .btn-primary:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    /* 로딩 스피너 */
+    .loading {
+      display: none;
+      text-align: center;
+      padding: 30px;
+    }
+
+    .loading.active {
+      display: block;
+    }
+
+    .spinner {
+      width: 50px;
+      height: 50px;
+      border: 4px solid rgba(255,255,255,0.3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 15px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* 결과 영역 */
+    .result {
+      display: none;
+      margin-top: 30px;
+    }
+
+    .result.active {
+      display: block;
+      animation: fadeIn 0.5s ease;
+    }
+
+    .result-image {
+      width: 100%;
+      border-radius: 15px;
+      margin-bottom: 20px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+    }
+
+    .result-text {
+      background: rgba(255,255,255,0.1);
+      padding: 20px;
+      border-radius: 12px;
+      line-height: 1.8;
+      font-size: 1.05rem;
+    }
+
+    /* 히스토리 */
+    .history-grid {
+      display: grid;
+      gap: 20px;
+    }
+
+    .history-card {
+      background: rgba(255,255,255,0.1);
+      backdrop-filter: blur(10px);
+      border-radius: 15px;
+      padding: 20px;
+      border: 1px solid rgba(255,255,255,0.2);
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .history-card:hover {
+      background: rgba(255,255,255,0.15);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+    }
+
+    .history-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    .history-date {
+      font-size: 0.9rem;
+      opacity: 0.8;
+    }
+
+    .history-style {
+      background: rgba(255,255,255,0.2);
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+    }
+
+    .history-content {
+      display: flex;
+      gap: 15px;
+      align-items: start;
+    }
+
+    .history-thumbnail {
+      width: 100px;
+      height: 100px;
+      object-fit: cover;
+      border-radius: 10px;
+      flex-shrink: 0;
+    }
+
+    .history-text {
+      flex: 1;
+      opacity: 0.9;
+      line-height: 1.6;
+    }
+
+    /* 모달 */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.8);
+      z-index: 1000;
+      padding: 20px;
+      overflow-y: auto;
+    }
+
+    .modal.active {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .modal-content {
+      background: rgba(255,255,255,0.15);
+      backdrop-filter: blur(20px);
+      border-radius: 20px;
+      padding: 30px;
+      max-width: 700px;
+      width: 100%;
+      border: 1px solid rgba(255,255,255,0.2);
+      position: relative;
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: none;
+      border: none;
+      color: #fff;
+      font-size: 2rem;
+      cursor: pointer;
+      opacity: 0.7;
+      transition: opacity 0.3s;
+    }
+
+    .modal-close:hover {
+      opacity: 1;
+    }
+
+    .modal-image {
+      width: 100%;
+      border-radius: 15px;
+      margin-bottom: 20px;
+    }
+
+    .modal-interpretation {
+      background: rgba(255,255,255,0.1);
+      padding: 20px;
+      border-radius: 12px;
+      line-height: 1.8;
+      margin-top: 15px;
+    }
+
+    /* 애니메이션 */
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes fadeInDown {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* 반응형 */
+    @media (max-width: 768px) {
+      h1 {
+        font-size: 2rem;
+      }
+
+      .style-options {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .history-content {
+        flex-direction: column;
+      }
+
+      .history-thumbnail {
+        width: 100%;
+        height: 200px;
+      }
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      opacity: 0.7;
+    }
+
+    .empty-state-icon {
+      font-size: 4rem;
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>✨ 꿈 그림 일기장</h1>
+      <p class="subtitle">당신의 꿈을 해석하고 그림으로 만나보세요</p>
+    </header>
+
+    <!-- 탭 네비게이션 -->
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab('interpret')">꿈 해석</button>
+      <button class="tab-btn" onclick="switchTab('history')">히스토리</button>
+    </div>
+
+    <!-- 탭 1: 꿈 해석 -->
+    <div id="interpret-tab" class="tab-content active">
+      <div class="card">
+        <div class="form-group">
+          <label for="dreamText">🌙 당신의 꿈 이야기</label>
+          <textarea 
+            id="dreamText" 
+            placeholder="당신의 꿈을 자유롭게 적어주세요...&#10;&#10;예: 어젯밤 꿈에서 하늘을 날고 있었어요. 구름 사이를 자유롭게 날아다니는데 기분이 정말 좋았습니다."
+          ></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>🎨 그림 스타일</label>
+          <div class="style-options">
+            <div class="style-option">
+              <input type="radio" name="style" id="style1" value="Dreamy" checked>
+              <label class="style-label" for="style1">몽환적인</label>
+            </div>
+            <div class="style-option">
+              <input type="radio" name="style" id="style2" value="Surrealism">
+              <label class="style-label" for="style2">초현실주의</label>
+            </div>
+            <div class="style-option">
+              <input type="radio" name="style" id="style3" value="Watercolor">
+              <label class="style-label" for="style3">수채화</label>
+            </div>
+            <div class="style-option">
+              <input type="radio" name="style" id="style4" value="Anime">
+              <label class="style-label" for="style4">지브리 스타일</label>
+            </div>
+            <div class="style-option">
+              <input type="radio" name="style" id="style5" value="Photorealistic">
+              <label class="style-label" for="style5">사실적인</label>
+            </div>
+            <div class="style-option">
+              <input type="radio" name="style" id="style6" value="Cyberpunk">
+              <label class="style-label" for="style6">사이버펑크</label>
+            </div>
+          </div>
+        </div>
+
+        <button class="btn-primary" onclick="interpretDream()">
+          꿈 해석하기
+        </button>
+      </div>
+
+      <!-- 로딩 -->
+      <div id="loading" class="loading card">
+        <div class="spinner"></div>
+        <p>당신의 꿈을 분석하고 그림을 그리는 중입니다...<br>잠시만 기다려주세요 ✨</p>
+      </div>
+
+      <!-- 결과 -->
+      <div id="result" class="result card">
+        <img id="resultImage" class="result-image" alt="꿈 이미지">
+        <div class="result-text" id="resultText"></div>
+      </div>
+    </div>
+
+    <!-- 탭 2: 히스토리 -->
+    <div id="history-tab" class="tab-content">
+      <div id="historyList" class="history-grid">
+        <div class="empty-state">
+          <div class="empty-state-icon">💭</div>
+          <p>아직 기록된 꿈이 없습니다.<br>첫 번째 꿈을 해석해보세요!</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 상세보기 모달 -->
+  <div id="modal" class="modal">
+    <div class="modal-content">
+      <button class="modal-close" onclick="closeModal()">&times;</button>
+      <div id="modalBody"></div>
+    </div>
+  </div>
+
+  <script>
+    // 탭 전환
+    function switchTab(tabName) {
+      const tabs = document.querySelectorAll('.tab-btn');
+      const contents = document.querySelectorAll('.tab-content');
+      
+      tabs.forEach(tab => tab.classList.remove('active'));
+      contents.forEach(content => content.classList.remove('active'));
+      
+      event.target.classList.add('active');
+      document.getElementById(tabName + '-tab').classList.add('active');
+      
+      if (tabName === 'history') {
+        loadHistory();
+      }
+    }
+
+    // 꿈 해석 실행
+    function interpretDream() {
+      const dreamText = document.getElementById('dreamText').value.trim();
+      const style = document.querySelector('input[name="style"]:checked').value;
+      
+      if (!dreamText) {
+        alert('꿈 이야기를 입력해주세요.');
+        return;
+      }
+      
+      // UI 상태 변경
+      document.getElementById('loading').classList.add('active');
+      document.getElementById('result').classList.remove('active');
+      document.querySelector('.btn-primary').disabled = true;
+      
+      // 백엔드 호출
+      google.script.run
+        .withSuccessHandler(onInterpretSuccess)
+        .withFailureHandler(onInterpretFailure)
+        .interpretDream(dreamText, style);
+    }
+
+    // 해석 성공
+    function onInterpretSuccess(response) {
+      document.getElementById('loading').classList.remove('active');
+      document.querySelector('.btn-primary').disabled = false;
+      
+      if (response.success) {
+        document.getElementById('resultImage').src = response.imageUrl;
+        document.getElementById('resultText').textContent = response.interpretation;
+        document.getElementById('result').classList.add('active');
+        
+        // 스크롤 이동
+        document.getElementById('result').scrollIntoView({ behavior: 'smooth' });
+      } else {
+        alert('오류가 발생했습니다: ' + response.error);
+      }
+    }
+
+    // 해석 실패
+    function onInterpretFailure(error) {
+      document.getElementById('loading').classList.remove('active');
+      document.querySelector('.btn-primary').disabled = false;
+      alert('오류가 발생했습니다: ' + error.message);
+    }
+
+    // 히스토리 로드
+    function loadHistory() {
+      google.script.run
+        .withSuccessHandler(onHistoryLoaded)
+        .withFailureHandler(onHistoryFailure)
+        .getHistory();
+    }
+
+    // 히스토리 로드 성공
+    function onHistoryLoaded(response) {
+      const listEl = document.getElementById('historyList');
+      
+      if (!response.success || response.data.length === 0) {
+        listEl.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-state-icon">💭</div>
+            <p>아직 기록된 꿈이 없습니다.<br>첫 번째 꿈을 해석해보세요!</p>
+          </div>
+        `;
+        return;
+      }
+      
+      let html = '';
+      response.data.forEach((item, index) => {
+        const date = new Date(item.timestamp);
+        const dateStr = date.toLocaleDateString('ko-KR') + ' ' + date.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
+        const preview = item.dreamText.length > 50 ? item.dreamText.substring(0, 50) + '...' : item.dreamText;
+        
+        html += `
+          <div class="history-card" onclick="showDetail(${index})">
+            <div class="history-header">
+              <span class="history-date">${dateStr}</span>
+              <span class="history-style">${item.style}</span>
+            </div>
+            <div class="history-content">
+              <img src="${item.imageUrl}" class="history-thumbnail" alt="꿈 이미지">
+              <div class="history-text">${preview}</div>
+            </div>
+          </div>
+        `;
+      });
+      
+      listEl.innerHTML = html;
+      
+      // 전역 변수에 저장 (상세보기용)
+      window.historyData = response.data;
+    }
+
+    // 히스토리 로드 실패
+    function onHistoryFailure(error) {
+      alert('히스토리를 불러오는데 실패했습니다: ' + error.message);
+    }
+
+    // 상세보기
+    function showDetail(index) {
+      const item = window.historyData[index];
+      const date = new Date(item.timestamp);
+      const dateStr = date.toLocaleDateString('ko-KR') + ' ' + date.toLocaleTimeString('ko-KR');
+      
+      document.getElementById('modalBody').innerHTML = `
+        <div class="history-header">
+          <span class="history-date">${dateStr}</span>
+          <span class="history-style">${item.style}</span>
+        </div>
+        <img src="${item.imageUrl}" class="modal-image" alt="꿈 이미지">
+        <div style="margin: 20px 0;">
+          <strong style="display: block; margin-bottom: 10px;">꿈 이야기:</strong>
+          <div style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 10px; line-height: 1.6;">
+            ${item.dreamText}
+          </div>
+        </div>
+        <div>
+          <strong style="display: block; margin-bottom: 10px;">꿈 해몽:</strong>
+          <div class="modal-interpretation">
+            ${item.interpretation}
+          </div>
+        </div>
+      `;
+      
+      document.getElementById('modal').classList.add('active');
+    }
+
+    // 모달 닫기
+    function closeModal() {
+      document.getElementById('modal').classList.remove('active');
+    }
+
+    // 모달 배경 클릭시 닫기
+    document.getElementById('modal').addEventListener('click', function(e) {
+      if (e.target === this) {
+        closeModal();
+      }
+    });
+  </script>
+</body>
+</html>
